@@ -18,13 +18,21 @@ def get_recommendations(title, cosine_sim=cosine_sim):
 
 # Fetch movie poster from TMDB API
 def fetch_poster(movie_id):
-    api_key = '7b995d3c6fd91a2284b4ad8cb390c7b8'  # Replace with your TMDB API key
-    url = f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}'
-    response = requests.get(url)
-    data = response.json()
-    poster_path = data['poster_path']
-    full_path = f"https://image.tmdb.org/t/p/w500{poster_path}"
-    return full_path
+    try:
+        api_key = '7b995d3c6fd91a2284b4ad8cb390c7b8'
+        url = f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}'
+        response = requests.get(url, timeout=5)  # ✅ timeout add kiya
+        data = response.json()
+        poster_path = data.get('poster_path')  # ✅ .get() use karo crash avoid karne
+        if poster_path:
+            return f"https://image.tmdb.org/t/p/w500{poster_path}"
+        else:
+            return None
+    except:
+        return None  # ✅ internet na ho toh bhi crash nahi karega
+
+    
+
 
 # Streamlit UI
 st.title("Movie Recommendation System")
@@ -44,5 +52,12 @@ if st.button('Recommend'):
                 movie_id = recommendations.iloc[j]['movie_id']
                 poster_url = fetch_poster(movie_id)
                 with col:
-                    st.image(poster_url, width=130)
-                    st.write(movie_title)
+                    if poster_url:
+                        st.image(poster_url, width=130)
+                    else:
+                        st.write("🎬 " + movie_title)
+                    
+                    
+
+
+
