@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import requests
 import pickle
-
+import os
+if not os.path.exists('movie_data.pkl'):
+    exec(open('generate_data.py').read())
 # Load the processed data and similarity matrix
 with open('movie_data.pkl', 'rb') as file:
     movies, cosine_sim = pickle.load(file)
